@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "52224275186",
+    "project_id": "agendafio-eb639",
+    "storage_bucket": "agendafio-eb639.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52224275186:android:ba3bfb90e8ff2e7b31966b",
+        "android_client_info": {
+          "package_name": "com.company.agenda"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7uQOgjk9SNAymVF9LWwLEwhEwe-JglH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52224275186:android:a2378be8909e3dea31966b",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7uQOgjk9SNAymVF9LWwLEwhEwe-JglH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

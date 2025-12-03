@@ -1,0 +1,35 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+
+# IntelliJ
+.idea/
+*.iml
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.packages
+build/
+.dart_tool/
+
+# Android
+/android/app/src/main/assets/flutter_assets/FontManifest.json
+/android/app/src/main/assets/flutter_assets/AssetManifest.json
+/android/app/src/main/assets/flutter_assets/NOTICES
+/android/app/build
+
+# iOS
+/ios/Flutter/App.framework
+/ios/Flutter/engine.framework
+/ios/Flutter/flutter_assets/FontManifest.json
+/ios/Flutter/flutter_assets/AssetManifest.json
+/ios/Flutter/flutter_assets/NOTICES
+/ios/build
+
+# Web
+/web/build
