@@ -20,6 +20,12 @@ final GoRouter router = GoRouter(
           },
         ),
         GoRoute(
+          path: 'signup',
+          builder: (BuildContext context, GoRouterState state) {
+            return const RegistrationScreen();
+          },
+        ),
+        GoRoute(
           path: 'forgot-password',
           builder: (BuildContext context, GoRouterState state) {
             return const ForgotPasswordScreen();
@@ -29,6 +35,18 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/home',
+      builder: (BuildContext context, GoRouterState state) {
+        return const CalendarScreen();
+      },
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (BuildContext context, GoRouterState state) {
+        return const LoginScreen();
+      },
+    ),
+    GoRoute(
+      path: '/calendar',
       builder: (BuildContext context, GoRouterState state) {
         return const CalendarScreen();
       },

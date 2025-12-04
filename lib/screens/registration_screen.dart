@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:developer' as developer;
+import 'package:myapp/widgets/auth_widgets.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -27,7 +28,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         password: _passwordController.text.trim(),
       );
       if (mounted) {
-        context.go('/calendar');
+        context.go('/home');
       }
     } on FirebaseAuthException catch (e, s) {
       developer.log(
@@ -56,39 +57,60 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registro'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Correo Electrónico',
-                border: OutlineInputBorder(),
+      body: GradientBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 140.0,
               ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 12.0),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Contraseña',
-                border: OutlineInputBorder(),
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 24.0),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _register,
-                    child: const Text('Registrarse'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
+                  // Encabezado
+                  AuthHeader(
+                    title: 'CREAR CUENTA',
+                    subtitle: 'AgendaFio',
+                    description: 'Únete para gestionar tus gastos',
                   ),
-          ],
+                  const SizedBox(height: 50),
+                  // Tarjeta del formulario
+                  AuthFormCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Tabs de navegación
+                        AuthTabBar(
+                          leftTabLabel: 'Iniciar sesión',
+                          rightTabLabel: 'Crear cuenta',
+                          isLeftActive: false,
+                          onLeftTap: () => context.go('/login'),
+                          onRightTap: () {},
+                        ),
+                        const SizedBox(height: 24),
+                        // Campo de email
+                        EmailTextField(controller: _emailController),
+                        const SizedBox(height: 16),
+                        // Campo de contraseña
+                        PasswordTextField(controller: _passwordController),
+                        const SizedBox(height: 24),
+                        // Botón de acción
+                        ActionButton(
+                          label: 'Crear cuenta',
+                          onPressed: _register,
+                          isLoading: _isLoading,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
