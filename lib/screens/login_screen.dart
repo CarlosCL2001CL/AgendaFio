@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Recuperar contraseña-en desarrollo',
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: const Color.fromARGB(255, 255, 255, 255),
                                 fontSize: 12,
                               ),
                             ),

@@ -73,9 +73,7 @@ class AuthTabBar extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: isLeftActive
-                        ? Color(0xFF3B82F6)
-                        : Colors.transparent,
+                    color: isLeftActive ? Colors.white : Colors.transparent,
                     width: 2,
                   ),
                 ),
@@ -87,7 +85,7 @@ class AuthTabBar extends StatelessWidget {
                     fontWeight: isLeftActive
                         ? FontWeight.bold
                         : FontWeight.normal,
-                    color: isLeftActive ? Color(0xFF3B82F6) : Colors.grey[400],
+                    color: isLeftActive ? Colors.white : Colors.white70,
                   ),
                 ),
               ),
@@ -102,9 +100,7 @@ class AuthTabBar extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: !isLeftActive
-                        ? Color(0xFF3B82F6)
-                        : Colors.transparent,
+                    color: !isLeftActive ? Colors.white : Colors.transparent,
                     width: 2,
                   ),
                 ),
@@ -116,7 +112,7 @@ class AuthTabBar extends StatelessWidget {
                     fontWeight: !isLeftActive
                         ? FontWeight.bold
                         : FontWeight.normal,
-                    color: !isLeftActive ? Color(0xFF3B82F6) : Colors.grey[400],
+                    color: !isLeftActive ? Colors.white : Colors.white70,
                   ),
                 ),
               ),
@@ -143,24 +139,28 @@ class EmailTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey[400]),
-        prefixIcon: Icon(Icons.mail_outline, color: Colors.grey[600]),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+        prefixIcon: Icon(
+          Icons.mail_outline,
+          color: Colors.white.withOpacity(0.7),
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF3B82F6), width: 2),
+          borderSide: const BorderSide(color: Colors.white, width: 2),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: Colors.white.withOpacity(0.1),
       ),
       keyboardType: TextInputType.emailAddress,
     );
@@ -190,10 +190,14 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return TextField(
       controller: widget.controller,
       obscureText: _obscurePassword,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: TextStyle(color: Colors.grey[400]),
-        prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[600]),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+        prefixIcon: Icon(
+          Icons.lock_outline,
+          color: Colors.white.withOpacity(0.7),
+        ),
         suffixIcon: GestureDetector(
           onTap: () {
             setState(() {
@@ -202,23 +206,23 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           },
           child: Icon(
             _obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: Colors.grey[600],
+            color: Colors.white.withOpacity(0.7),
           ),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF3B82F6), width: 2),
+          borderSide: const BorderSide(color: Colors.white, width: 2),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: Colors.white.withOpacity(0.1),
       ),
     );
   }
@@ -256,7 +260,7 @@ class ActionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           child: Center(
             child: isLoading
-                ? SizedBox(
+                ? const SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
@@ -266,7 +270,7 @@ class ActionButton extends StatelessWidget {
                   )
                 : Text(
                     label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -288,7 +292,7 @@ class GradientBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -314,6 +318,7 @@ class AuthFormCard extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 8,
+      color: Colors.white.withOpacity(0.15),
       child: Padding(padding: const EdgeInsets.all(24.0), child: child),
     );
   }

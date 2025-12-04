@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myapp/widgets/auth_widgets.dart';
+import 'package:myapp/widgets/ui_widgets.dart';
 
 // Modelo para representar un gasto
 class Expense {
@@ -62,126 +65,185 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true, // Extender el cuerpo detrás de la AppBar
       appBar: AppBar(
-        title: const Text('AgendaFio - Mis Gastos'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.transparent, // AppBar transparente
+        elevation: 0, // Sin sombra
+        title: const Text(
+          'AgendaFio',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: _signOut,
             tooltip: 'Cerrar Sesión',
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Mensaje de bienvenida
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 16.0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bienvenid@ ${_user?.email?.split('@').first ?? 'Usuario'}',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+      body: GradientBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 24.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Mensaje de bienvenida
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bienvenid@ ${_user?.email?.split('@').first ?? 'Usuario'}',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Gestiona tus gastos diarios',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Calendario en una tarjeta transparente
+                TransparentCard(
+                  child: TableCalendar(
+                    locale: 'es_ES',
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    calendarFormat: _calendarFormat,
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      if (!isSameDay(_selectedDay, selectedDay)) {
+                        setState(() {
+                          _selectedDay = _normalizeDate(selectedDay);
+                          _focusedDay = focusedDay;
+                        });
+                      }
+                    },
+                    onFormatChanged: (format) {
+                      if (_calendarFormat != format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      }
+                    },
+                    onPageChanged: (focusedDay) {
+                      setState(() {
+                        _focusedDay = focusedDay;
+                      });
+                    },
+                    calendarBuilders: CalendarBuilders(
+                      dowBuilder: (context, day) {
+                        final text = DateFormat.E('es_ES').format(day);
+                        return Center(
+                          child: Text(
+                            text,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        );
+                      },
+                    ),
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekdayStyle: TextStyle(color: Colors.white),
+                      weekendStyle: TextStyle(color: Colors.white),
+                    ),
+                    calendarStyle: CalendarStyle(
+                      todayDecoration: BoxDecoration(
+                        color: Colors.deepPurpleAccent.withOpacity(0.7),
+                        shape: BoxShape.circle,
+                      ),
+                      selectedDecoration: const BoxDecoration(
+                        color: Colors.deepPurple,
+                        shape: BoxShape.circle,
+                      ),
+                      markerDecoration: const BoxDecoration(
+                        color: Colors.amber,
+                        shape: BoxShape.circle,
+                      ),
+                      defaultTextStyle: const TextStyle(color: Colors.white),
+                      weekendTextStyle: const TextStyle(color: Colors.white70),
+                      outsideTextStyle: const TextStyle(color: Colors.white30),
+                    ),
+                    headerStyle: const HeaderStyle(
+                      titleCentered: true,
+                      formatButtonVisible: false,
+                      titleTextStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      leftChevronIcon: Icon(
+                        Icons.chevron_left,
+                        color: Colors.white,
+                      ),
+                      rightChevronIcon: Icon(
+                        Icons.chevron_right,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Gestiona tus gastos diarios',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                ),
+
+                const SizedBox(height: 24.0),
+
+                // Gastos y totales
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 16.0,
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Calendario
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: TableCalendar(
-                locale: 'es_ES',
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                focusedDay: _focusedDay,
-                calendarFormat: _calendarFormat,
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  if (!isSameDay(_selectedDay, selectedDay)) {
-                    setState(() {
-                      _selectedDay = _normalizeDate(selectedDay);
-                      _focusedDay = focusedDay;
-                    });
-                  }
-                },
-                onFormatChanged: (format) {
-                  if (_calendarFormat != format) {
-                    setState(() {
-                      _calendarFormat = format;
-                    });
-                  }
-                },
-                onPageChanged: (focusedDay) {
-                  setState(() {
-                    _focusedDay = focusedDay;
-                  });
-                },
-                calendarStyle: const CalendarStyle(
-                  todayDecoration: BoxDecoration(
-                    color: Colors.deepPurpleAccent,
-                    shape: BoxShape.circle,
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.deepPurple,
-                    shape: BoxShape.circle,
-                  ),
-                  markerDecoration: BoxDecoration(
-                    color: Colors.amber,
-                    shape: BoxShape.circle,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Gastos del Día',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      MonthlyTotalWidget(focusedDay: _focusedDay, user: _user),
+                    ],
                   ),
                 ),
-                headerStyle: const HeaderStyle(
-                  titleCentered: true,
-                  formatButtonVisible: false,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Gastos del Día',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+                // Lista de gastos
+                SizedBox(
+                  height: 300,
+                  child: DailyExpensesList(
+                    selectedDay: _selectedDay,
+                    user: _user,
                   ),
-                  MonthlyTotalWidget(focusedDay: _focusedDay, user: _user),
-                ],
-              ),
+                ),
+              ],
             ),
-            Expanded(
-              child: DailyExpensesList(selectedDay: _selectedDay, user: _user),
-            ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (_selectedDay == null || _user == null)
             ? null
             : () => _showAddExpenseDialog(context, _selectedDay, _user),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         tooltip: 'Añadir Gasto',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -206,14 +268,23 @@ class MonthlyTotalWidget extends StatelessWidget {
         ),
       );
     }
+
+    final firstDayOfMonth = DateTime(focusedDay.year, focusedDay.month, 1);
+    final lastDayOfMonth = DateTime(focusedDay.year, focusedDay.month + 1, 0);
+
+    final startOfMonth = _dateToString(firstDayOfMonth);
+    final endOfMonth = _dateToString(lastDayOfMonth);
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('expenses')
           .where('userId', isEqualTo: user!.uid)
+          .where('dateString', isGreaterThanOrEqualTo: startOfMonth)
+          .where('dateString', isLessThanOrEqualTo: endOfMonth)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const CircularProgressIndicator(color: Colors.white);
         }
 
         if (!snapshot.hasData || snapshot.hasError) {
@@ -228,32 +299,12 @@ class MonthlyTotalWidget extends StatelessWidget {
         }
 
         double monthlyTotal = 0.0;
-        final currentMonth = focusedDay.month;
-        final currentYear = focusedDay.year;
-
         for (var doc in snapshot.data!.docs) {
           final data = doc.data() as Map<String, dynamic>?;
-
           if (data != null) {
-            // Obtener la fecha guardada (string YYYY-MM-DD)
-            final dateString = data['dateString'] as String?;
-            if (dateString != null) {
-              try {
-                final parts = dateString.split('-');
-                final expenseYear = int.parse(parts[0]);
-                final expenseMonth = int.parse(parts[1]);
-
-                // Validar que el gasto sea del mes y año actual
-                if (expenseMonth == currentMonth &&
-                    expenseYear == currentYear) {
-                  final price = data['price'] as num?;
-                  if (price != null) {
-                    monthlyTotal += price.toDouble();
-                  }
-                }
-              } catch (e) {
-                // Error procesando fecha, ignorar
-              }
+            final price = data['price'] as num?;
+            if (price != null) {
+              monthlyTotal += price.toDouble();
             }
           }
         }
@@ -263,7 +314,7 @@ class MonthlyTotalWidget extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.green,
+            color: Colors.greenAccent,
           ),
         );
       },
@@ -281,7 +332,12 @@ class DailyExpensesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (selectedDay == null || user == null) {
-      return const Center(child: Text('Selecciona un día para ver los gastos'));
+      return const Center(
+        child: Text(
+          'Selecciona un día para ver los gastos',
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
     }
 
     final dateString = _dateToString(selectedDay!);
@@ -294,11 +350,18 @@ class DailyExpensesList extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          );
         }
 
         if (!snapshot.hasData || snapshot.hasError) {
-          return const Center(child: Text('Error al cargar gastos'));
+          return const Center(
+            child: Text(
+              'Error al cargar gastos',
+              style: TextStyle(color: Colors.red),
+            ),
+          );
         }
 
         final expenses = snapshot.data!.docs.map((doc) {
@@ -312,10 +375,14 @@ class DailyExpensesList extends StatelessWidget {
         }).toList();
 
         if (expenses.isEmpty) {
-          return const Center(child: Text('No hay gastos para este día.'));
+          return const Center(
+            child: Text(
+              'No hay gastos para este día.',
+              style: TextStyle(color: Colors.white70),
+            ),
+          );
         }
 
-        // Calcular total del día
         double dailyTotal = 0.0;
         for (var expense in expenses) {
           dailyTotal += expense.price;
@@ -324,27 +391,34 @@ class DailyExpensesList extends StatelessWidget {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
                 'Total del día: \$${dailyTotal.toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.white,
                 ),
               ),
             ),
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 itemCount: expenses.length,
                 itemBuilder: (context, index) {
                   final expense = expenses[index];
                   return Card(
                     elevation: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
+                    color: Colors.white.withOpacity(0.9),
                     child: ListTile(
-                      title: Text(expense.productName),
+                      title: Text(
+                        expense.productName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -356,7 +430,10 @@ class DailyExpensesList extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.redAccent,
+                            ),
                             onPressed: () =>
                                 _deleteExpense(context, expense.id),
                           ),
@@ -405,7 +482,6 @@ class DailyExpensesList extends StatelessWidget {
   }
 }
 
-// Diálogo para añadir un nuevo gasto
 Future<void> _showAddExpenseDialog(
   BuildContext context,
   DateTime? selectedDay,
@@ -419,7 +495,12 @@ Future<void> _showAddExpenseDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('Añadir Nuevo Gasto'),
+        backgroundColor: Colors.white.withOpacity(0.2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Añadir Nuevo Gasto',
+          style: TextStyle(color: Colors.white),
+        ),
         content: Form(
           key: formKey,
           child: Column(
@@ -427,7 +508,19 @@ Future<void> _showAddExpenseDialog(
             children: [
               TextFormField(
                 controller: productNameController,
-                decoration: const InputDecoration(labelText: 'Producto'),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Producto',
+                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, introduce un nombre de producto';
@@ -438,9 +531,20 @@ Future<void> _showAddExpenseDialog(
               const SizedBox(height: 16),
               TextFormField(
                 controller: priceController,
-                decoration: const InputDecoration(
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
                   labelText: 'Precio (USD)',
+                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
                   prefixText: '\$',
+                  prefixStyle: const TextStyle(color: Colors.white),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2),
+                  ),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
@@ -461,7 +565,10 @@ Future<void> _showAddExpenseDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -475,7 +582,13 @@ Future<void> _showAddExpenseDialog(
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Guardar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
           ),
         ],
       );
@@ -483,7 +596,6 @@ Future<void> _showAddExpenseDialog(
   );
 }
 
-// Añade el gasto a Firestore
 void _addExpense(
   String productName,
   double price,
@@ -497,9 +609,9 @@ void _addExpense(
 
   FirebaseFirestore.instance.collection('expenses').add({
     'userId': user.uid,
-    'dateString': dateString, // Guardar como string YYYY-MM-DD
+    'dateString': dateString,
     'productName': productName,
     'price': price,
-    'timestamp': FieldValue.serverTimestamp(), // Para ordenar por timestamp
+    'timestamp': FieldValue.serverTimestamp(),
   });
 }
