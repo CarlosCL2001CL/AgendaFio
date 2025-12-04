@@ -453,8 +453,15 @@ class DailyExpensesList extends StatelessWidget {
   void _deleteExpense(BuildContext context, String expenseId) {
     showDialog(
       context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
       builder: (context) {
         return AlertDialog(
+          backgroundColor: const Color.fromARGB(
+            121,
+            255,
+            255,
+            255,
+          ).withOpacity(0.77), // Ajusta entre 0.0 y 1.0
           title: const Text('Eliminar Gasto'),
           content: const Text(
             '¿Estás seguro de que deseas eliminar este gasto?',
@@ -463,6 +470,9 @@ class DailyExpensesList extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancelar'),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -472,7 +482,15 @@ class DailyExpensesList extends StatelessWidget {
                     .delete();
                 Navigator.of(context).pop();
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(68, 104, 58, 183),
+                foregroundColor: const Color.fromARGB(
+                  255,
+                  0,
+                  0,
+                  0,
+                ), // Color del texto
+              ),
               child: const Text('Eliminar'),
             ),
           ],
@@ -493,13 +511,19 @@ Future<void> _showAddExpenseDialog(
 
   return showDialog(
     context: context,
+    barrierColor: Colors.black.withOpacity(0.5),
     builder: (context) {
       return AlertDialog(
-        backgroundColor: Colors.white.withOpacity(0.2),
+        backgroundColor: const Color.fromARGB(
+          121,
+          255,
+          255,
+          255,
+        ).withOpacity(0.77),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Añadir Nuevo Gasto',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
         ),
         content: Form(
           key: formKey,
@@ -508,17 +532,27 @@ Future<void> _showAddExpenseDialog(
             children: [
               TextFormField(
                 controller: productNameController,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                 decoration: InputDecoration(
                   labelText: 'Producto',
-                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  labelStyle: TextStyle(
+                    color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
+                  ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.white.withOpacity(0.5),
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        0,
+                        0,
+                      ).withOpacity(0.5),
                     ),
                   ),
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2),
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      width: 2,
+                    ),
                   ),
                 ),
                 validator: (value) {
@@ -531,19 +565,31 @@ Future<void> _showAddExpenseDialog(
               const SizedBox(height: 16),
               TextFormField(
                 controller: priceController,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                 decoration: InputDecoration(
                   labelText: 'Precio (USD)',
-                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  labelStyle: TextStyle(
+                    color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
+                  ),
                   prefixText: '\$',
-                  prefixStyle: const TextStyle(color: Colors.white),
+                  prefixStyle: const TextStyle(
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.white.withOpacity(0.5),
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        0,
+                        0,
+                      ).withOpacity(0.5),
                     ),
                   ),
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2),
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      width: 2,
+                    ),
                   ),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
@@ -567,7 +613,7 @@ Future<void> _showAddExpenseDialog(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text(
               'Cancelar',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
             ),
           ),
           ElevatedButton(
@@ -583,12 +629,15 @@ Future<void> _showAddExpenseDialog(
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: const Color.fromARGB(68, 104, 58, 183),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Guardar',
+              style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+            ),
           ),
         ],
       );
